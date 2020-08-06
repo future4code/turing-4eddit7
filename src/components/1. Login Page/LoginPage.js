@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import {useHistory} from 'react-router-dom';
+import {Pagina, Logo, Input, BotaoLogin, BotaoCadastro, Copyright} from './styles'
 
 const LoginPage = () => {
     const history = useHistory()
@@ -29,7 +30,6 @@ const LoginPage = () => {
             setEmail("")
             setSenha("")
         })
-        
     }
 
     const onChangeEmail = event => {
@@ -41,15 +41,15 @@ const LoginPage = () => {
     }
 
 return (
-    <div>
-        <h1>Login Page</h1>
-        <input placeholder="Email" value={email} onChange={onChangeEmail} />
-        <input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
-        <button onClick={goToFeedPage}>Logar</button>
+    <Pagina>
+        <Logo>labeddit</Logo>
+        <Input placeholder="Email" value={email} onChange={onChangeEmail} />
+        <Input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
+        <BotaoLogin onClick={goToFeedPage}>LOGAR</BotaoLogin>
         <br/>
-        <button onClick={goToNewUserPage}>Criar novo usuário</button>
-        
-    </div>
+        <BotaoCadastro onClick={goToNewUserPage}>Criar novo usuário?</BotaoCadastro>
+        <Copyright>© 2020 Labenu - Desenvolvido por Guilherme Paiva (Turma Turing)</Copyright>
+    </Pagina>
     )  
 }
 

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios'
 import {useHistory} from 'react-router-dom';
+import {Pagina, Logo, Input, BotaoCriar, BotaoHome, Copyright} from './styles'
 
 const NewUserPage = () => {
     const history = useHistory()
@@ -10,6 +11,10 @@ const NewUserPage = () => {
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
     const [usuario, setUsuario] = useState("")
+
+    const goToLoginPage = () => {
+        history.push("/")
+    }
 
     const criarUsuario = () => {
         const body = {
@@ -42,14 +47,16 @@ const NewUserPage = () => {
     
 
 return (
-    <div>
-        <h1>New User Page</h1>
-        <input placeholder="Nome de usuário" value={usuario} onChange={onChangeUsuario} />
-        <input placeholder="Email" value={email} onChange={onChangeEmail} />
-        <input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
-        <br />
-        <button onClick={criarUsuario}>Cadastrar</button>
-    </div>
+    <Pagina>
+        <Logo>novo usuário</Logo>
+        <Input placeholder="Nome de usuário" value={usuario} onChange={onChangeUsuario} />
+        <Input placeholder="Email" value={email} onChange={onChangeEmail} />
+        <Input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
+        <Input placeholder="Confirme sua senha" type="password" />
+        <BotaoCriar onClick={criarUsuario}>Cadastrar</BotaoCriar>
+        <BotaoHome onClick={goToLoginPage}>Voltar para home?</BotaoHome>
+        <Copyright>© 2020 Labenu - Desenvolvido por Guilherme Paiva (Turma Turing)</Copyright>
+    </Pagina>
     )  
 }
 

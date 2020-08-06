@@ -1,15 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios'
+import {Pagina, Header, Logo, BotaoLogoff, BotaoNovoPost, DivNovoPost, InputNovoPost, BotaoCriaNovoPost, GridPosts, CardPost,
+TextoPost, Por, AutorComments, Comentarios, Autor, Seta, Votes, NumVotos, Carregando} from './styles'
 
 const FeedPage = () => {
     const history = useHistory()
 
     const baseUrl = "https://us-central1-labenu-apis.cloudfunctions.net/labEddit"
-
+    
     const [arrayPosts, setArrayPosts] = useState([])
     const [textoPost, setTextoPost] = useState("")
     const [carregando, setCarregando] = useState(true)
+    const [divNovoPost, setDivNovoPost] = useState(false)
+    const [curtido, setCurtido] = useState(false)
 
     useEffect(() => {
         mostraPostsFeed()
@@ -21,7 +25,6 @@ const FeedPage = () => {
 
     const mostraPostsFeed = () => {
         const token = window.localStorage.getItem("token")
-
         axios.get(`${baseUrl}/posts`, {
             headers: {
                 Authorization: token
@@ -59,75 +62,93 @@ const FeedPage = () => {
             alert("Post criado com sucesso!")
             mostraPostsFeed()
             setTextoPost("")
+            mostraDivNovoPost()
         }).catch((error) => {
             alert("Erro ao criar post, por favor tente novamente")
             console.log(error.message)
         })
-    }
+    }  
 
     const upvote = (postId) => {
-        const token = window.localStorage.getItem("token")
-        const body = {
-            direction: 1
-        }
-        axios.put(`${baseUrl}/posts/${postId}/vote`, body, {
-            headers: {
-                Authorization: token
+            const token = window.localStorage.getItem("token")
+            const body = {
+                direction: 1
             }
-        })
-        .then(() => {
-            mostraPostsFeed()
-        }).catch((error) => {
-            alert("Erro ao dar upvote, por favor tente novamente")
-            console.log(error.message)
-        })
-    }
+            axios.put(`${baseUrl}/posts/${postId}/vote`, body, {
+                headers: {
+                    Authorization: token
+                }
+            })
+            .then(() => {
+                mostraPostsFeed()
+                setCurtido(!curtido)
+            }).catch((error) => {
+                alert("Erro ao dar upvote, por favor tente novamente")
+                console.log(error.message)
+            })
+        }
 
     const downvote = (postId) => {
-        const token = window.localStorage.getItem("token")
-        const body = {
-            direction: -1
-        }
-        axios.put(`${baseUrl}/posts/${postId}/vote`, body, {
-            headers: {
-                Authorization: token
+            const token = window.localStorage.getItem("token")
+            const body = {
+                direction: -1
             }
-        })
-        .then(() => {
-            mostraPostsFeed()
-        }).catch((error) => {
-            alert("Erro ao dar downvote, por favor tente novamente")
-            console.log(error.message)
-        })
+            axios.put(`${baseUrl}/posts/${postId}/vote`, body, {
+                headers: {
+                    Authorization: token
+                }
+            })
+            .then(() => {
+                mostraPostsFeed()
+            }).catch((error) => {
+                alert("Erro ao dar downvote, por favor tente novamente")
+                console.log(error.message)
+            })
     }
 
     const onChangeTextoPost = event => {
         setTextoPost(event.target.value)
     }
 
-return (
-    <div>
-        <h1>Feed Page</h1>
-        <button onClick={logoff}>Fazer logoff</button>
-        <div>
-            <input placeholder="Escreva seu post" value={textoPost} onChange={onChangeTextoPost} />
-            <button onClick={criaPost}>Postar</button>
-        </div>
-        <br />
-        {carregando ? <div>Carregando...</div> : 
-        <div>
-        {arrayPosts.map((post) => {
-            return <div key={post.id}>
-            <p>{post.username}</p>
-            <p onClick={() => goToPostPage(post.id)}>{post.text}</p>
-            <span onClick={() => upvote(post.id)}>↑</span> {post.votesCount} <span onClick={() => downvote(post.id)}>↓</span>
-            <span onClick={() => goToPostPage(post.id)}> {post.commentsCount} comentários</span>
-            <hr />
-        </div>
-        })}
-        </div>}
-    </div>
-    )  
+    const mostraDivNovoPost = () => {
+        setDivNovoPost(!divNovoPost)
+    }
+
+    const cor = "^"
+
+    const branco = "v"
+
+    const flechaUpvote = (postId) => {curtido ? (cor) : (branco)}
+
+    return (
+        <Pagina>
+            <Header>
+                <Logo>labeddit</Logo>
+                <div>
+                    <BotaoNovoPost onClick={mostraDivNovoPost}>Novo post</BotaoNovoPost>
+                    <BotaoLogoff onClick={logoff}>Sair</BotaoLogoff>
+                </div>
+            </Header>
+            {divNovoPost ? 
+            <DivNovoPost>
+                <InputNovoPost placeholder="Escreva seu post" value={textoPost} onChange={onChangeTextoPost} />
+                <BotaoCriaNovoPost onClick={criaPost}>Postar</BotaoCriaNovoPost>
+            </DivNovoPost> : <div></div>}
+            {carregando ? <Carregando>Carregando...</Carregando> : 
+            <GridPosts>
+            {arrayPosts.map((post) => {
+                return <CardPost key={post.id}>
+                    <Votes><Seta onClick={() => upvote(post.id)}>{flechaUpvote}</Seta><NumVotos>{post.votesCount}</NumVotos><Seta onClick={() => downvote(post.id)}>↓</Seta></Votes>
+                    <TextoPost onClick={() => goToPostPage(post.id)}>{post.text}</TextoPost>
+                    <AutorComments>
+                        <Autor><Por>por </Por>{post.username}</Autor>   
+                        <Comentarios onClick={() => goToPostPage(post.id)}> {post.commentsCount} comentários</Comentarios>
+                    </AutorComments>
+                </CardPost>
+            })}
+            </GridPosts>}
+        </Pagina>
+        )  
 }
 
 export default FeedPage

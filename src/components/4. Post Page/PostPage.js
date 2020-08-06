@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import axios from 'axios';
 
-
 const PostPage = () => {
     const history = useHistory()
 
@@ -69,6 +68,42 @@ const PostPage = () => {
         setComentario(event.target.value)
     }
 
+    const upvote = (commentId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: 1
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/comment/${commentId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro ao dar upvote, por favor tente novamente")
+            console.log(error.message)
+        })
+    }
+
+const downvote = (commentId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: -1
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/comment/${commentId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro ao dar downvote, por favor tente novamente")
+            console.log(error.message)
+        })
+}
+
 
 return (
     <div>
@@ -78,8 +113,8 @@ return (
         <div>
             <p>{infosPost.username}</p>
             <p>{infosPost.text}</p>
-            <p>↑ {infosPost.votesCount} ↓</p>
-            <p>{infosPost.commentsCount} comentários</p>
+            <span>↑ {infosPost.votesCount} ↓</span>
+            <span> {infosPost.commentsCount} comentários</span>
         </div>
         <br />
         <div>
@@ -91,7 +126,7 @@ return (
             return <div key={comentario.id}>
             <p>{comentario.username}</p>
             <p>{comentario.text}</p>
-            <p>↑ {comentario.votesCount} ↓</p>
+            <p><span onClick={() => upvote(comentario.id)}>↑</span> {comentario.votesCount} <span onClick={() => downvote(comentario.id)}>↓</span></p>
             <br />
         </div>
         })}
