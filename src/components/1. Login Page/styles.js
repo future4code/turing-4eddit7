@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import BG from '../images/bghome.jpg'
 
 export const Pagina = styled.div`
     display: flex;
@@ -8,7 +9,7 @@ export const Pagina = styled.div`
     width: 100vw;
     height: 100vh;
     font-family: Helvetica;
-    background-image: url("https://redditupvoted.files.wordpress.com/2018/06/hangoutsscreen_1.jpg");
+    background-image: url(${BG});
     background-size: 100vw;
 `
 export const Logo = styled.h1`
@@ -34,7 +35,7 @@ export const BotaoLogin = styled.button`
     margin: 13px 0 0 0;
     border-radius: 50px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     color: white;
     background-color: #09D8B6;
     cursor: pointer;
@@ -53,7 +54,6 @@ export const BotaoCadastro = styled.p`
     font-size: 15px;
     margin: 5px 0 0 0;
     cursor: pointer;
-    /* text-shadow: 2px 2px 2px black; */
     user-select: none;
     :hover {
         color: #D98602;

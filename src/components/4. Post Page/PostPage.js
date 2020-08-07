@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import axios from 'axios';
+import {Pagina, BotaoFeed, Header, Logo, BotaoLogoff, Carregando, CardPost, ContainerPost, Votes, Seta, TituloComentarios, 
+    TextoPost, AutorComments, Autor, Por, CardComentar, InputComentar, BotaoComentar, CardComentario, Liked, Disliked, 
+    ComentariosVotes, ComentariosSeta, ComentariosNumVotosVermelho, ComentariosNumVotos, ComentariosTextoPost, ComentariosAutorComments,
+    ComentariosPor, ComentariosAutor, LikedPost, DislikedPost, NumVotosVermelho} from './styles'
 
 const PostPage = () => {
     const history = useHistory()
@@ -68,6 +72,65 @@ const PostPage = () => {
         setComentario(event.target.value)
     }
 
+    const logoff = () => {
+        localStorage.clear("token")
+        history.push("/")
+    }
+
+    const upvotePost = () => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: 1
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro ao dar upvote, por favor tente novamente")
+            console.log(error.message)
+        })
+    }
+
+    const downvotePost = (postId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: -1
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro ao dar downvote, por favor tente novamente")
+            console.log(error.message)
+        })
+    }
+
+    const zerovotePost = (postId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: 0
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro, por favor tente novamente")
+            console.log(error.message)
+        })
+}
+
     const upvote = (commentId) => {
         const token = window.localStorage.getItem("token")
         const body = {
@@ -86,7 +149,7 @@ const PostPage = () => {
         })
     }
 
-const downvote = (commentId) => {
+    const downvote = (commentId) => {
         const token = window.localStorage.getItem("token")
         const body = {
             direction: -1
@@ -104,34 +167,76 @@ const downvote = (commentId) => {
         })
 }
 
+const zerovote = (commentId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: 0
+        }
+        axios.put(`${baseUrl}/posts/${params.postId}/comment/${commentId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraDetalhesPost()
+        }).catch((error) => {
+            alert("Erro, por favor tente novamente")
+            console.log(error.message)
+        })
+}
+
+const sinalizaVotoPost = (voto, comentario, contagemVoto) => {
+    if (voto === 1){
+        return <Votes><LikedPost onClick={() => zerovotePost(comentario)}>↑</LikedPost><NumVotosVermelho>{contagemVoto}</NumVotosVermelho><Seta onClick={() => downvotePost(comentario)}>↓</Seta></Votes>
+    }else if (voto === 0){
+        return <Votes><Seta onClick={() => upvotePost(comentario)}>↑</Seta><ComentariosNumVotos>{contagemVoto}</ComentariosNumVotos><Seta onClick={() => downvotePost(comentario)}>↓</Seta></Votes>
+    }else if (voto === -1){
+        return <Votes><Seta onClick={() => upvotePost(comentario)}>↑</Seta><NumVotosVermelho>{contagemVoto}</NumVotosVermelho><DislikedPost onClick={() => zerovotePost(comentario)}>↓</DislikedPost></Votes>
+    }
+}
+
+const sinalizaVotoComentario = (voto, comentario, contagemVoto) => {
+    if (voto === 1){
+        return <ComentariosVotes><Liked onClick={() => zerovote(comentario)}>↑</Liked><ComentariosNumVotosVermelho>{contagemVoto}</ComentariosNumVotosVermelho><ComentariosSeta onClick={() => downvote(comentario)}>↓</ComentariosSeta></ComentariosVotes>
+    }else if (voto === 0){
+        return <ComentariosVotes><ComentariosSeta onClick={() => upvote(comentario)}>↑</ComentariosSeta><ComentariosNumVotos>{contagemVoto}</ComentariosNumVotos><ComentariosSeta onClick={() => downvote(comentario)}>↓</ComentariosSeta></ComentariosVotes>
+    }else if (voto === -1){
+        return <ComentariosVotes><ComentariosSeta onClick={() => upvote(comentario)}>↑</ComentariosSeta><ComentariosNumVotosVermelho>{contagemVoto}</ComentariosNumVotosVermelho><Disliked onClick={() => zerovote(comentario)}>↓</Disliked></ComentariosVotes>
+    }
+}
 
 return (
-    <div>
-        <h1>Post Page</h1>
-        <button onClick={goToFeedPage}>Voltar para o feed</button>
-        {carregando ? <div><br />Carregando...</div> : <div>
-        <div>
-            <p>{infosPost.username}</p>
-            <p>{infosPost.text}</p>
-            <span>↑ {infosPost.votesCount} ↓</span>
-            <span> {infosPost.commentsCount} comentários</span>
-        </div>
-        <br />
-        <div>
-            <input placeholder="Escreva seu comentário" value={comentario} onChange={onChangeComentario} />
-            <button onClick={postaComentario}>Comentar</button>
-        </div>
-        <br />
-        {arrayComentarios.map((comentario) => {
-            return <div key={comentario.id}>
-            <p>{comentario.username}</p>
-            <p>{comentario.text}</p>
-            <p><span onClick={() => upvote(comentario.id)}>↑</span> {comentario.votesCount} <span onClick={() => downvote(comentario.id)}>↓</span></p>
-            <br />
-        </div>
-        })}
-        </div>}
-    </div>
+    <Pagina>
+        <Header>
+            <Logo><i>lab</i>eddit</Logo>
+            <div>
+                <BotaoFeed onClick={goToFeedPage}>Feed</BotaoFeed>
+                <BotaoLogoff onClick={logoff}>Sair</BotaoLogoff>
+            </div>
+        </Header>
+        {carregando ? <Carregando>Carregando...</Carregando> : 
+            <ContainerPost>
+                <CardPost>
+                    {sinalizaVotoPost(infosPost.userVoteDirection, infosPost.id, infosPost.votesCount)}
+                    <TextoPost>{infosPost.text}</TextoPost>
+                    <AutorComments>
+                        <Autor><Por>por </Por>{infosPost.username}</Autor>
+                    </AutorComments>
+                </CardPost>
+                <CardComentar>
+                    <InputComentar placeholder="Escreva seu comentário" value={comentario} onChange={onChangeComentario} />
+                    <BotaoComentar onClick={postaComentario}>Comentar</BotaoComentar>
+                </CardComentar>
+                <TituloComentarios>{infosPost.commentsCount} comentários</TituloComentarios>
+                {arrayComentarios.map((comentario) => {
+                    return <CardComentario key={comentario.id}>
+                    {sinalizaVotoComentario(comentario.userVoteDirection, comentario.id, comentario.votesCount)}
+                    <ComentariosTextoPost>{comentario.text}</ComentariosTextoPost>
+                    <ComentariosAutorComments><ComentariosPor>por</ComentariosPor><ComentariosAutor>{comentario.username}</ComentariosAutor></ComentariosAutorComments>
+                </CardComentario>
+                })}
+            </ContainerPost>}
+    </Pagina>
     )  
 }
 

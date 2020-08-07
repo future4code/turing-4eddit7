@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import axios from 'axios'
 import {useHistory} from 'react-router-dom';
-import {Pagina, Logo, Input, BotaoCriar, BotaoHome, Copyright} from './styles'
+import {Pagina, Logo, Input, BotaoCriar, BotaoHome, Copyright, NovoUsuario} from './styles'
 
 const NewUserPage = () => {
     const history = useHistory()
@@ -48,13 +48,14 @@ const NewUserPage = () => {
 
 return (
     <Pagina>
-        <Logo>novo usuário</Logo>
+        <Logo><i>lab</i>eddit</Logo>
+        <NovoUsuario>novo usuário</NovoUsuario>
         <Input placeholder="Nome de usuário" value={usuario} onChange={onChangeUsuario} />
         <Input placeholder="Email" value={email} onChange={onChangeEmail} />
         <Input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
         <Input placeholder="Confirme sua senha" type="password" />
         <BotaoCriar onClick={criarUsuario}>Cadastrar</BotaoCriar>
-        <BotaoHome onClick={goToLoginPage}>Voltar para home?</BotaoHome>
+        <BotaoHome onClick={goToLoginPage}>Voltar para login?</BotaoHome>
         <Copyright>© 2020 Labenu - Desenvolvido por Guilherme Paiva (Turma Turing)</Copyright>
     </Pagina>
     )  

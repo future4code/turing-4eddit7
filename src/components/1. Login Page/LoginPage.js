@@ -42,10 +42,10 @@ const LoginPage = () => {
 
 return (
     <Pagina>
-        <Logo>labeddit</Logo>
+        <Logo><i>lab</i>eddit</Logo>
         <Input placeholder="Email" value={email} onChange={onChangeEmail} />
         <Input placeholder="Senha" value={senha} onChange={onChangeSenha} type="password" />
-        <BotaoLogin onClick={goToFeedPage}>LOGAR</BotaoLogin>
+        <BotaoLogin onClick={goToFeedPage}>Logar</BotaoLogin>
         <br/>
         <BotaoCadastro onClick={goToNewUserPage}>Criar novo usuário?</BotaoCadastro>
         <Copyright>© 2020 Labenu - Desenvolvido por Guilherme Paiva (Turma Turing)</Copyright>

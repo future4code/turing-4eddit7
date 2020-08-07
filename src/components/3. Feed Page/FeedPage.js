@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {useHistory} from 'react-router-dom';
 import axios from 'axios'
 import {Pagina, Header, Logo, BotaoLogoff, BotaoNovoPost, DivNovoPost, InputNovoPost, BotaoCriaNovoPost, GridPosts, CardPost,
-TextoPost, Por, AutorComments, Comentarios, Autor, Seta, Votes, NumVotos, Carregando} from './styles'
+TextoPost, Por, AutorComments, Comentarios, Autor, Seta, Votes, LikedPost, NumVotosVermelho, ComentariosNumVotos, Carregando,
+DislikedPost} from './styles'
 
 const FeedPage = () => {
     const history = useHistory()
@@ -114,16 +115,38 @@ const FeedPage = () => {
         setDivNovoPost(!divNovoPost)
     }
 
-    const cor = "^"
+    const sinalizaVoto = (voto, comentario, contagemVoto) => {
+        if (voto === 1){
+            return <Votes><LikedPost onClick={() => zerovote(comentario)}>↑</LikedPost><NumVotosVermelho>{contagemVoto}</NumVotosVermelho><Seta onClick={() => downvote(comentario)}>↓</Seta></Votes>
+        }else if (voto === 0){
+            return <Votes><Seta onClick={() => upvote(comentario)}>↑</Seta><ComentariosNumVotos>{contagemVoto}</ComentariosNumVotos><Seta onClick={() => downvote(comentario)}>↓</Seta></Votes>
+        }else if (voto === -1){
+            return <Votes><Seta onClick={() => upvote(comentario)}>↑</Seta><NumVotosVermelho>{contagemVoto}</NumVotosVermelho><DislikedPost onClick={() => zerovote(comentario)}>↓</DislikedPost></Votes>
+        }
+    }
 
-    const branco = "v"
-
-    const flechaUpvote = (postId) => {curtido ? (cor) : (branco)}
+    const zerovote = (postId) => {
+        const token = window.localStorage.getItem("token")
+        const body = {
+            direction: 0
+        }
+        axios.put(`${baseUrl}/posts/${postId}/vote`, body, {
+            headers: {
+                Authorization: token
+            }
+        })
+        .then(() => {
+            mostraPostsFeed()
+        }).catch((error) => {
+            alert("Erro, por favor tente novamente")
+            console.log(error.message)
+        })
+}
 
     return (
         <Pagina>
             <Header>
-                <Logo>labeddit</Logo>
+                <Logo><i>lab</i>eddit</Logo>
                 <div>
                     <BotaoNovoPost onClick={mostraDivNovoPost}>Novo post</BotaoNovoPost>
                     <BotaoLogoff onClick={logoff}>Sair</BotaoLogoff>
@@ -138,11 +161,11 @@ const FeedPage = () => {
             <GridPosts>
             {arrayPosts.map((post) => {
                 return <CardPost key={post.id}>
-                    <Votes><Seta onClick={() => upvote(post.id)}>{flechaUpvote}</Seta><NumVotos>{post.votesCount}</NumVotos><Seta onClick={() => downvote(post.id)}>↓</Seta></Votes>
+                    {sinalizaVoto(post.userVoteDirection, post.id, post.votesCount)}
                     <TextoPost onClick={() => goToPostPage(post.id)}>{post.text}</TextoPost>
-                    <AutorComments>
+                    <AutorComments onClick={() => goToPostPage(post.id)}>
                         <Autor><Por>por </Por>{post.username}</Autor>   
-                        <Comentarios onClick={() => goToPostPage(post.id)}> {post.commentsCount} comentários</Comentarios>
+                        <Comentarios> {post.commentsCount} comentários</Comentarios>
                     </AutorComments>
                 </CardPost>
             })}

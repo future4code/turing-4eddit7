@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import BG from '../images/bgnovousuario.jpg'
 
 export const Pagina = styled.div`
     display: flex;
@@ -8,24 +9,29 @@ export const Pagina = styled.div`
     width: 100vw;
     height: 100vh;
     font-family: Helvetica;
-    background-image: url("https://get.wallhere.com/photo/digital-art-artwork-fantasy-art-planet-Sun-sunlight-nature-forest-trees-mountains-landscape-sky-skyscape-comet-clouds-minimalism-Flatdesign-vector-art-illustration-vector-1793295.jpg");
+    background-image: url(${BG});
     background-size: 100vw;
 `
 export const Logo = styled.h1`
+    color: #4940AC;
+    font-size: 70px;
+    margin: -50px 0 50px 0;
+    user-select: none;
+`
+export const NovoUsuario = styled.h1`
     color: white;
     font-size: 105px;
-    margin: -90px 0 10px 0;
+    margin: -80px 0 10px 0;
     user-select: none;
 `
 export const Input = styled.input`
-    padding-left: 3px;
+    padding-left: 5px;
     margin: 8px 0;
     border: none;
     width: 200px;
     height: 25px;
     font-size: 15px;
     outline: none;
-    /* box-shadow: 2px 2px 2px #15374D; */
 `
 export const BotaoCriar = styled.button`
     border: none;
@@ -34,9 +40,9 @@ export const BotaoCriar = styled.button`
     margin: 10px 0 0 0;
     border-radius: 50px;
     font-weight: bold;
-    font-size: 16px;
-    color: #1E756D;
-    background-color: white;
+    font-size: 17px;
+    color: white;
+    background-color: #4940AC;
     cursor: pointer;
     outline: none;
     box-shadow: 1px 1px 2px #15374D;
